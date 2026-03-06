@@ -6,16 +6,15 @@
   <title>CV-Maker — AVA2i</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Calibri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="app">
 
-  <!-- Header -->
   <header class="app-header">
     <div class="app-logo">
-      <div class="logo-badge">CV</div>
+      <img src="logo.png" alt="AVA2i" class="app-logo-img">
       <span class="logo-text">CV-Maker</span>
     </div>
     <span class="app-tagline">Formatage automatique · Aucune clé requise</span>
@@ -36,7 +35,7 @@
           <input type="file" id="fileInput" accept=".pdf,.docx" hidden>
         </label>
       </div>
-      <p class="upload-hint">Le texte sera extrait localement — aucune donnée n'est envoyée sur internet.</p>
+      <p class="upload-hint">Extraction locale — aucune donnée envoyée sur internet.</p>
     </section>
 
     <!-- 2. Status -->
@@ -45,7 +44,7 @@
         <div class="spinner"></div>
         <div>
           <p class="status-title" id="statusTitle">Traitement en cours…</p>
-          <p class="status-text"  id="statusText">Lecture du fichier…</p>
+          <p class="status-text" id="statusText">Lecture du fichier…</p>
         </div>
       </div>
     </section>
@@ -65,73 +64,60 @@
     <!-- 4. Edit form -->
     <section id="editSection" hidden>
       <div class="edit-toolbar">
-        <button class="btn-secondary" id="editBackBtn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Retour
-        </button>
-        <p class="edit-toolbar-hint">Vérifiez et complétez les informations extraites</p>
-        <button class="btn-primary" id="generateBtn">
-          Générer le CV
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
+        <button class="btn-secondary" id="editBackBtn">← Retour</button>
+        <p class="edit-toolbar-hint">Vérifiez et corrigez les informations extraites</p>
+        <button class="btn-primary" id="generateBtn">Générer le CV →</button>
       </div>
 
       <div class="edit-form">
 
-        <!-- Identité -->
         <div class="form-card">
-          <h3 class="form-card-title">Informations personnelles</h3>
+          <h3 class="form-card-title">Identité</h3>
           <div class="form-row-2">
-            <div class="form-field"><label>Nom complet</label><input type="text" id="fName" placeholder="Sophie Marchand"></div>
-            <div class="form-field"><label>Titre professionnel</label><input type="text" id="fTitle" placeholder="Senior Consultant"></div>
-          </div>
-          <div class="form-row-3">
-            <div class="form-field"><label>Email</label><input type="email" id="fEmail" placeholder="s.marchand@email.com"></div>
-            <div class="form-field"><label>Téléphone</label><input type="tel" id="fPhone" placeholder="+33 6 00 00 00 00"></div>
-            <div class="form-field"><label>Localisation</label><input type="text" id="fLocation" placeholder="Paris, France"></div>
-          </div>
-          <div class="form-row-2">
-            <div class="form-field"><label>LinkedIn</label><input type="text" id="fLinkedin" placeholder="linkedin.com/in/…"></div>
-            <div class="form-field"><label>Site web</label><input type="text" id="fWebsite" placeholder="www.monsite.com"></div>
+            <div class="form-field">
+              <label>Nom / Initiales <span class="form-hint-inline">(ex : HIW ou Jean Dupont)</span></label>
+              <input type="text" id="fName" placeholder="HIW">
+            </div>
+            <div class="form-field">
+              <label>Titre du poste</label>
+              <input type="text" id="fTitle" placeholder="Tech Lead – Spark / Java / Kubernetes">
+            </div>
           </div>
         </div>
 
-        <!-- Profil -->
-        <div class="form-card">
-          <h3 class="form-card-title">Profil</h3>
-          <div class="form-field">
-            <textarea id="fSummary" rows="4" placeholder="Résumé professionnel en 2-3 phrases…"></textarea>
-          </div>
-        </div>
-
-        <!-- Expérience -->
-        <div class="form-card">
-          <div class="form-card-header">
-            <h3 class="form-card-title">Expérience professionnelle</h3>
-            <button class="btn-add" id="addExpBtn">+ Ajouter</button>
-          </div>
-          <div id="expList"></div>
-        </div>
-
-        <!-- Formation -->
         <div class="form-card">
           <div class="form-card-header">
             <h3 class="form-card-title">Formation</h3>
-            <button class="btn-add" id="addEduBtn">+ Ajouter</button>
+            <button class="btn-add" id="addFormationBtn">+ Ajouter</button>
           </div>
-          <div id="eduList"></div>
+          <div id="formationList"></div>
         </div>
 
-        <!-- Compétences -->
         <div class="form-card">
-          <h3 class="form-card-title">Compétences</h3>
+          <div class="form-card-header">
+            <h3 class="form-card-title">Certifications</h3>
+            <button class="btn-add" id="addCertBtn">+ Ajouter</button>
+          </div>
+          <div id="certList"></div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-header">
+            <h3 class="form-card-title">Compétences techniques</h3>
+            <button class="btn-add" id="addTechSkillBtn">+ Ajouter une catégorie</button>
+          </div>
+          <p class="form-hint-block">Une catégorie par ligne (ex : "Langages" / "Java, Scala, Python")</p>
+          <div id="techSkillList"></div>
+        </div>
+
+        <div class="form-card">
+          <h3 class="form-card-title">Compétences fonctionnelles</h3>
           <div class="form-field">
-            <label class="form-hint">Séparez par des virgules ou des retours à la ligne (max 14)</label>
-            <textarea id="fSkills" rows="4" placeholder="Gestion de projet, Excel avancé, Power BI, Change Management…"></textarea>
+            <label class="form-hint-inline">Une compétence par ligne</label>
+            <textarea id="fFuncSkills" rows="5" placeholder="Analyser, modéliser et concevoir des besoins utilisateurs métier.&#10;Rédiger les spécifications fonctionnelles détaillées."></textarea>
           </div>
         </div>
 
-        <!-- Langues -->
         <div class="form-card">
           <div class="form-card-header">
             <h3 class="form-card-title">Langues</h3>
@@ -140,16 +126,21 @@
           <div id="langList"></div>
         </div>
 
-      </div><!-- /edit-form -->
+        <div class="form-card">
+          <div class="form-card-header">
+            <h3 class="form-card-title">Expériences professionnelles</h3>
+            <button class="btn-add" id="addExpBtn">+ Ajouter</button>
+          </div>
+          <div id="expList"></div>
+        </div>
+
+      </div>
     </section>
 
     <!-- 5. Preview -->
     <section id="previewSection" hidden>
       <div class="preview-toolbar">
-        <button class="btn-secondary" id="previewBackBtn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Modifier
-        </button>
+        <button class="btn-secondary" id="previewBackBtn">← Modifier</button>
         <span class="toolbar-hint">Aperçu du CV formaté</span>
         <button class="btn-primary" id="downloadBtn">
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -157,48 +148,54 @@
         </button>
       </div>
 
-      <!-- CV Template -->
       <div class="cv-wrapper">
         <div class="cv-page" id="cvPage">
 
-          <div class="cv-header">
-            <div class="cv-initials" id="cvInitials">JD</div>
-            <div class="cv-header-info">
-              <h1 class="cv-name"     id="cvName">Prénom Nom</h1>
-              <p  class="cv-job-title" id="cvJobTitle">Titre professionnel</p>
-              <div class="cv-contacts" id="cvContacts"></div>
-            </div>
+          <!-- Logo (top right) -->
+          <div class="cv-logo-area">
+            <img src="logo.png" alt="AVA2i" class="cv-logo-img">
           </div>
 
-          <div class="cv-body">
-            <div class="cv-main">
-              <div class="cv-section" id="sec-summary">
-                <div class="cv-section-header"><span class="cv-section-icon">◈</span><h2 class="cv-section-title">Profil</h2></div>
-                <p class="cv-summary-text" id="cvSummary"></p>
-              </div>
-              <div class="cv-section" id="sec-experience">
-                <div class="cv-section-header"><span class="cv-section-icon">◈</span><h2 class="cv-section-title">Expérience professionnelle</h2></div>
-                <div id="cvExperience"></div>
-              </div>
-            </div>
-            <div class="cv-sidebar">
-              <div class="cv-section" id="sec-skills">
-                <h2 class="cv-section-title cv-sidebar-title">Compétences</h2>
-                <ul class="cv-skills-list" id="cvSkills"></ul>
-              </div>
-              <div class="cv-section" id="sec-education">
-                <h2 class="cv-section-title cv-sidebar-title">Formation</h2>
-                <div id="cvEducation"></div>
-              </div>
-              <div class="cv-section" id="sec-languages">
-                <h2 class="cv-section-title cv-sidebar-title">Langues</h2>
-                <div id="cvLanguages"></div>
-              </div>
-              <div class="cv-section" id="sec-certifications" style="display:none">
-                <h2 class="cv-section-title cv-sidebar-title">Certifications</h2>
-                <div id="cvCertifications"></div>
-              </div>
-            </div>
+          <!-- Candidate name + title -->
+          <div class="cv-head">
+            <div class="cv-candidate-name" id="cvName">NOM</div>
+            <div class="cv-candidate-title" id="cvTitle">Titre du poste</div>
+          </div>
+
+          <!-- FORMATION -->
+          <div class="cv-section" id="sec-formation">
+            <div class="cv-section-label">FORMATION</div>
+            <table class="cv-table" id="cvFormation"></table>
+          </div>
+
+          <!-- CERTIFICATIONS -->
+          <div class="cv-section" id="sec-certifications">
+            <div class="cv-section-label">CERTIFICATIONS</div>
+            <table class="cv-table" id="cvCertifications"></table>
+          </div>
+
+          <!-- COMPÉTENCES TECHNIQUES -->
+          <div class="cv-section" id="sec-techskills">
+            <div class="cv-section-label">COMPÉTENCES TECHNIQUES</div>
+            <table class="cv-table cv-skills-table" id="cvTechSkills"></table>
+          </div>
+
+          <!-- COMPÉTENCES FONCTIONNELLES -->
+          <div class="cv-section" id="sec-funcskills">
+            <div class="cv-section-label">COMPÉTENCES FONCTIONNELLES</div>
+            <div class="cv-func-skills" id="cvFuncSkills"></div>
+          </div>
+
+          <!-- LANGUES -->
+          <div class="cv-section" id="sec-languages">
+            <div class="cv-section-label">LANGUES</div>
+            <table class="cv-table cv-lang-table" id="cvLanguages"></table>
+          </div>
+
+          <!-- EXPÉRIENCES -->
+          <div class="cv-section" id="sec-experience">
+            <div class="cv-section-label">EXPERIENCES PROFESSIONNELLES</div>
+            <table class="cv-exp-table" id="cvExperience"></table>
           </div>
 
         </div><!-- /cv-page -->
