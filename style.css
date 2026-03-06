@@ -97,6 +97,51 @@ html, body {
 }
 .btn-remove:hover { color: #dc2626; background: #fee2e2; }
 
+/* ---- Settings Panel --------------------------------------- */
+.settings-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.12); color: white;
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 6px 14px; border-radius: 6px;
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  font-family: inherit; transition: background 0.15s;
+}
+.settings-btn:hover { background: rgba(255,255,255,0.22); }
+
+.settings-panel {
+  display: none;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 52px;
+  z-index: 99;
+}
+.settings-panel.open { display: block; }
+.settings-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px 24px;
+}
+.settings-inner h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.settings-desc { font-size: 12px; color: var(--text-lt); margin-bottom: 12px; }
+.settings-desc a { color: var(--blue); }
+
+.api-key-row { display: flex; gap: 8px; }
+.api-key-row input {
+  flex: 1;
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 7px 10px; font-size: 13px; font-family: inherit;
+  color: var(--text); outline: none;
+}
+.api-key-row input:focus { border-color: var(--blue); box-shadow: 0 0 0 2px #dbeafe; }
+
+.api-key-status {
+  font-size: 12px; margin-top: 6px; min-height: 18px;
+}
+.api-key-status.ok  { color: #16a34a; }
+.api-key-status.err { color: #dc2626; }
+
 /* ---- Upload Section --------------------------------------- */
 #uploadSection { width: 100%; max-width: 540px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
 

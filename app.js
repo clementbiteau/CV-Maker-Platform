@@ -1,5 +1,9 @@
 'use strict';
 
+const STORAGE_KEY  = 'cvmaker_api_key';
+const CLAUDE_API   = 'https://api.anthropic.com/v1/messages';
+const MODEL        = 'claude-haiku-4-5-20251001';
+
 // ---- DOM refs -------------------------------------------
 const $ = id => document.getElementById(id);
 
@@ -18,6 +22,14 @@ const errorText   = $('errorText');
 
 // ---- Init -----------------------------------------------
 window.addEventListener('DOMContentLoaded', () => {
+  // API key
+  const saved = localStorage.getItem(STORAGE_KEY) || '';
+  if (saved) { $('apiKey').value = saved; setKeyStatus('ok', 'Clé enregistrée ✓'); }
+  else openSettings();
+  $('settingsBtn').addEventListener('click', toggleSettings);
+  $('saveKey').addEventListener('click', saveApiKey);
+  $('apiKey').addEventListener('keydown', e => { if (e.key === 'Enter') saveApiKey(); });
+
   // File input
   fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
   dropZone.addEventListener('click', () => fileInput.click());
@@ -45,6 +57,24 @@ window.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', scaleCVWrapper);
 });
 
+// ---- API Key --------------------------------------------
+function toggleSettings() { $('settingsPanel').classList.toggle('open'); }
+function openSettings()   { $('settingsPanel').classList.add('open'); }
+
+function saveApiKey() {
+  const key = $('apiKey').value.trim();
+  if (!key.startsWith('sk-ant-')) { setKeyStatus('err', 'La clé doit commencer par "sk-ant-"'); return; }
+  localStorage.setItem(STORAGE_KEY, key);
+  setKeyStatus('ok', 'Clé enregistrée ✓');
+  $('settingsPanel').classList.remove('open');
+}
+function setKeyStatus(type, msg) {
+  const el = $('apiKeyStatus');
+  el.textContent  = msg;
+  el.className    = 'api-key-status ' + type;
+}
+function getApiKey() { return localStorage.getItem(STORAGE_KEY) || $('apiKey').value.trim(); }
+
 // ---- Section visibility ---------------------------------
 function showSection(id) {
   [uploadSection, statusSection, errorSection, editSection, previewSection]
@@ -67,6 +97,9 @@ async function handleFile(file) {
   if (!file.name.match(/\.(pdf|docx)$/i)) { alert('Formats acceptés : PDF ou DOCX.'); return; }
   if (file.size > 10 * 1024 * 1024) { alert('Fichier trop volumineux (max 10 Mo).'); return; }
 
+  const apiKey = getApiKey();
+  if (!apiKey) { openSettings(); alert('Veuillez d\'abord enregistrer votre clé API Claude.'); return; }
+
   showSection('statusSection');
   setStatus('Extraction du texte…', 'Lecture du fichier…');
 
@@ -82,8 +115,8 @@ async function handleFile(file) {
       throw new Error('Impossible d\'extraire le texte. Le fichier est peut-être scanné ou protégé.');
     }
 
-    setStatus('Analyse…', 'Détection des sections…');
-    const data = parseCVText(text);
+    setStatus('Analyse par l\'IA…', 'Claude structure le CV…');
+    const data = await parseCVWithClaude(text, apiKey);
 
     populateForm(data);
     showSection('editSection');
@@ -126,8 +159,93 @@ async function extractDOCX(file) {
 }
 
 // ============================================================
-// HEURISTIC PARSER
-// Detects AVA-style sections and generic CV sections
+// CLAUDE API PARSER
+// ============================================================
+async function parseCVWithClaude(text, apiKey) {
+  const prompt = `Tu es un expert en parsing de CV pour un cabinet de conseil en IT (AVA2i).
+Extrais toutes les informations du CV suivant et retourne UNIQUEMENT un objet JSON valide, sans markdown, sans explication.
+
+Structure exacte requise :
+{
+  "name": "Nom ou initiales du candidat",
+  "title": "Titre du poste / intitulé principal",
+  "formation": [
+    { "year": "2016", "description": "Diplôme – École" }
+  ],
+  "certifications": [
+    { "year": "2022", "name": "Nom de la certification" }
+  ],
+  "techSkills": [
+    { "category": "Langages", "items": "Java, Scala, Python, SQL" },
+    { "category": "Big Data", "items": "Spark, Hadoop, Kafka, Hive" }
+  ],
+  "funcSkills": [
+    "Analyser et concevoir des besoins utilisateurs.",
+    "Rédiger les spécifications fonctionnelles."
+  ],
+  "languages": [
+    { "language": "Anglais", "level": "Niveau avancé" }
+  ],
+  "experience": [
+    {
+      "dateRange": "Octobre 2023 – Présent",
+      "company": "NOM ENTREPRISE",
+      "role": "Titre du poste",
+      "workEnv": "Anglophone",
+      "project": "Description du projet en quelques phrases.",
+      "tasks": [
+        "Tâche ou réalisation 1",
+        "Tâche ou réalisation 2"
+      ],
+      "techEnv": "Java 17, Spark 3, Docker, Kubernetes, AWS…"
+    }
+  ]
+}
+
+Règles :
+- Retourne UNIQUEMENT le JSON, rien d'autre
+- Garde la langue d'origine du CV (français reste français, anglais reste anglais)
+- Pour techSkills : regroupe par catégorie logique (Langages, Big Data, Cloud, Frameworks, SGBD, Outils, Méthodologie, etc.)
+- Les expériences doivent être triées de la plus récente à la plus ancienne
+- Si une information est absente, utilise "" pour les strings et [] pour les tableaux
+
+CV :
+---
+${text.substring(0, 14000)}
+---`;
+
+  const response = await fetch(CLAUDE_API, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-calls': 'true'
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 4096,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    if (response.status === 401) throw new Error('Clé API invalide. Vérifiez votre clé dans les paramètres.');
+    if (response.status === 429) throw new Error('Limite de requêtes atteinte. Réessayez dans quelques secondes.');
+    throw new Error(err.error?.message || `Erreur API (${response.status})`);
+  }
+
+  const result = await response.json();
+  const raw    = result.content?.[0]?.text || '';
+  const match  = raw.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('Réponse IA invalide. Réessayez.');
+  try { return JSON.parse(match[0]); }
+  catch { throw new Error('JSON invalide dans la réponse. Réessayez.'); }
+}
+
+// ============================================================
+// HEURISTIC FALLBACK (kept for reference, not used when API key present)
 // ============================================================
 function parseCVText(text) {
   const data = {
