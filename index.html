@@ -10,171 +10,208 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="app">
 
-  <div class="app">
-
-    <!-- App Header -->
-    <header class="app-header">
-      <div class="app-logo">
-        <div class="logo-badge">CV</div>
-        <span class="logo-text">CV-Maker</span>
-      </div>
-      <button class="settings-btn" id="settingsBtn" title="Paramètres API">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        API Key
-      </button>
-    </header>
-
-    <!-- Settings Panel -->
-    <div class="settings-panel" id="settingsPanel">
-      <div class="settings-inner">
-        <h3>Clé API Claude (Anthropic)</h3>
-        <p class="settings-desc">Obtenez votre clé sur <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. Elle est stockée uniquement dans votre navigateur.</p>
-        <div class="api-key-row">
-          <input type="password" id="apiKey" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false">
-          <button class="btn-primary" id="saveKey">Enregistrer</button>
-        </div>
-        <div class="api-key-status" id="apiKeyStatus"></div>
-      </div>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="app-logo">
+      <div class="logo-badge">CV</div>
+      <span class="logo-text">CV-Maker</span>
     </div>
+    <span class="app-tagline">Formatage automatique · Aucune clé requise</span>
+  </header>
 
-    <!-- Main -->
-    <main class="app-main">
+  <main class="app-main">
 
-      <!-- Upload Section -->
-      <section class="upload-section" id="uploadSection">
-        <div class="upload-area" id="dropZone">
-          <div class="upload-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-          </div>
-          <p class="upload-title">Déposez votre CV ici</p>
-          <p class="upload-subtitle">PDF ou DOCX · Taille max 10 Mo</p>
-          <label class="btn-upload">
-            Parcourir les fichiers
-            <input type="file" id="fileInput" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
-          </label>
+    <!-- 1. Upload -->
+    <section id="uploadSection">
+      <div class="upload-area" id="dropZone">
+        <div class="upload-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
         </div>
-        <p class="upload-hint">Le CV sera reformaté automatiquement à l'aide de l'IA.</p>
-      </section>
+        <p class="upload-title">Déposez votre CV ici</p>
+        <p class="upload-subtitle">PDF ou DOCX · Taille max 10 Mo</p>
+        <label class="btn-upload">
+          Parcourir les fichiers
+          <input type="file" id="fileInput" accept=".pdf,.docx" hidden>
+        </label>
+      </div>
+      <p class="upload-hint">Le texte sera extrait localement — aucune donnée n'est envoyée sur internet.</p>
+    </section>
 
-      <!-- Status Section -->
-      <section class="status-section" id="statusSection" hidden>
-        <div class="status-card">
-          <div class="spinner"></div>
-          <div>
-            <p class="status-title" id="statusTitle">Traitement en cours…</p>
-            <p class="status-text" id="statusText">Extraction du texte…</p>
+    <!-- 2. Status -->
+    <section id="statusSection" hidden>
+      <div class="status-card">
+        <div class="spinner"></div>
+        <div>
+          <p class="status-title" id="statusTitle">Traitement en cours…</p>
+          <p class="status-text"  id="statusText">Lecture du fichier…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Error -->
+    <section id="errorSection" hidden>
+      <div class="error-card">
+        <span class="error-icon">⚠</span>
+        <div>
+          <p class="error-title">Erreur</p>
+          <p class="error-text" id="errorText"></p>
+        </div>
+        <button class="btn-secondary" id="errorRetryBtn">Réessayer</button>
+      </div>
+    </section>
+
+    <!-- 4. Edit form -->
+    <section id="editSection" hidden>
+      <div class="edit-toolbar">
+        <button class="btn-secondary" id="editBackBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Retour
+        </button>
+        <p class="edit-toolbar-hint">Vérifiez et complétez les informations extraites</p>
+        <button class="btn-primary" id="generateBtn">
+          Générer le CV
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+      <div class="edit-form">
+
+        <!-- Identité -->
+        <div class="form-card">
+          <h3 class="form-card-title">Informations personnelles</h3>
+          <div class="form-row-2">
+            <div class="form-field"><label>Nom complet</label><input type="text" id="fName" placeholder="Sophie Marchand"></div>
+            <div class="form-field"><label>Titre professionnel</label><input type="text" id="fTitle" placeholder="Senior Consultant"></div>
+          </div>
+          <div class="form-row-3">
+            <div class="form-field"><label>Email</label><input type="email" id="fEmail" placeholder="s.marchand@email.com"></div>
+            <div class="form-field"><label>Téléphone</label><input type="tel" id="fPhone" placeholder="+33 6 00 00 00 00"></div>
+            <div class="form-field"><label>Localisation</label><input type="text" id="fLocation" placeholder="Paris, France"></div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-field"><label>LinkedIn</label><input type="text" id="fLinkedin" placeholder="linkedin.com/in/…"></div>
+            <div class="form-field"><label>Site web</label><input type="text" id="fWebsite" placeholder="www.monsite.com"></div>
           </div>
         </div>
-      </section>
 
-      <!-- Error Section -->
-      <section class="error-section" id="errorSection" hidden>
-        <div class="error-card">
-          <div class="error-icon">⚠</div>
-          <div>
-            <p class="error-title">Une erreur est survenue</p>
-            <p class="error-text" id="errorText"></p>
-          </div>
-          <button class="btn-secondary" id="errorRetryBtn">Réessayer</button>
-        </div>
-      </section>
-
-      <!-- Preview Section -->
-      <section class="preview-section" id="previewSection" hidden>
-        <div class="preview-toolbar">
-          <button class="btn-secondary" id="resetBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            Nouveau CV
-          </button>
-          <div class="toolbar-right">
-            <span class="toolbar-hint">Aperçu du CV formaté</span>
-            <button class="btn-primary" id="downloadBtn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Télécharger le PDF
-            </button>
+        <!-- Profil -->
+        <div class="form-card">
+          <h3 class="form-card-title">Profil</h3>
+          <div class="form-field">
+            <textarea id="fSummary" rows="4" placeholder="Résumé professionnel en 2-3 phrases…"></textarea>
           </div>
         </div>
 
-        <!-- CV Template -->
-        <div class="cv-wrapper">
-          <div class="cv-page" id="cvPage">
+        <!-- Expérience -->
+        <div class="form-card">
+          <div class="form-card-header">
+            <h3 class="form-card-title">Expérience professionnelle</h3>
+            <button class="btn-add" id="addExpBtn">+ Ajouter</button>
+          </div>
+          <div id="expList"></div>
+        </div>
 
-            <!-- CV Header -->
-            <div class="cv-header">
-              <div class="cv-header-left">
-                <div class="cv-initials" id="cvInitials">JD</div>
+        <!-- Formation -->
+        <div class="form-card">
+          <div class="form-card-header">
+            <h3 class="form-card-title">Formation</h3>
+            <button class="btn-add" id="addEduBtn">+ Ajouter</button>
+          </div>
+          <div id="eduList"></div>
+        </div>
+
+        <!-- Compétences -->
+        <div class="form-card">
+          <h3 class="form-card-title">Compétences</h3>
+          <div class="form-field">
+            <label class="form-hint">Séparez par des virgules ou des retours à la ligne (max 14)</label>
+            <textarea id="fSkills" rows="4" placeholder="Gestion de projet, Excel avancé, Power BI, Change Management…"></textarea>
+          </div>
+        </div>
+
+        <!-- Langues -->
+        <div class="form-card">
+          <div class="form-card-header">
+            <h3 class="form-card-title">Langues</h3>
+            <button class="btn-add" id="addLangBtn">+ Ajouter</button>
+          </div>
+          <div id="langList"></div>
+        </div>
+
+      </div><!-- /edit-form -->
+    </section>
+
+    <!-- 5. Preview -->
+    <section id="previewSection" hidden>
+      <div class="preview-toolbar">
+        <button class="btn-secondary" id="previewBackBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Modifier
+        </button>
+        <span class="toolbar-hint">Aperçu du CV formaté</span>
+        <button class="btn-primary" id="downloadBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Télécharger le PDF
+        </button>
+      </div>
+
+      <!-- CV Template -->
+      <div class="cv-wrapper">
+        <div class="cv-page" id="cvPage">
+
+          <div class="cv-header">
+            <div class="cv-initials" id="cvInitials">JD</div>
+            <div class="cv-header-info">
+              <h1 class="cv-name"     id="cvName">Prénom Nom</h1>
+              <p  class="cv-job-title" id="cvJobTitle">Titre professionnel</p>
+              <div class="cv-contacts" id="cvContacts"></div>
+            </div>
+          </div>
+
+          <div class="cv-body">
+            <div class="cv-main">
+              <div class="cv-section" id="sec-summary">
+                <div class="cv-section-header"><span class="cv-section-icon">◈</span><h2 class="cv-section-title">Profil</h2></div>
+                <p class="cv-summary-text" id="cvSummary"></p>
               </div>
-              <div class="cv-header-right">
-                <h1 class="cv-name" id="cvName">Prénom Nom</h1>
-                <p class="cv-job-title" id="cvJobTitle">Titre professionnel</p>
-                <div class="cv-contacts" id="cvContacts"></div>
+              <div class="cv-section" id="sec-experience">
+                <div class="cv-section-header"><span class="cv-section-icon">◈</span><h2 class="cv-section-title">Expérience professionnelle</h2></div>
+                <div id="cvExperience"></div>
               </div>
             </div>
-
-            <!-- CV Body -->
-            <div class="cv-body">
-
-              <!-- Main Column -->
-              <div class="cv-main">
-
-                <div class="cv-section" id="sec-summary">
-                  <div class="cv-section-header">
-                    <span class="cv-section-icon">◈</span>
-                    <h2 class="cv-section-title">Profil</h2>
-                  </div>
-                  <p class="cv-summary-text" id="cvSummary"></p>
-                </div>
-
-                <div class="cv-section" id="sec-experience">
-                  <div class="cv-section-header">
-                    <span class="cv-section-icon">◈</span>
-                    <h2 class="cv-section-title">Expérience professionnelle</h2>
-                  </div>
-                  <div id="cvExperience"></div>
-                </div>
-
+            <div class="cv-sidebar">
+              <div class="cv-section" id="sec-skills">
+                <h2 class="cv-section-title cv-sidebar-title">Compétences</h2>
+                <ul class="cv-skills-list" id="cvSkills"></ul>
               </div>
-
-              <!-- Sidebar -->
-              <div class="cv-sidebar">
-
-                <div class="cv-section" id="sec-skills">
-                  <h2 class="cv-section-title cv-sidebar-title">Compétences</h2>
-                  <ul class="cv-skills-list" id="cvSkills"></ul>
-                </div>
-
-                <div class="cv-section" id="sec-education">
-                  <h2 class="cv-section-title cv-sidebar-title">Formation</h2>
-                  <div id="cvEducation"></div>
-                </div>
-
-                <div class="cv-section" id="sec-languages">
-                  <h2 class="cv-section-title cv-sidebar-title">Langues</h2>
-                  <div id="cvLanguages"></div>
-                </div>
-
-                <div class="cv-section" id="sec-certifications" style="display:none">
-                  <h2 class="cv-section-title cv-sidebar-title">Certifications</h2>
-                  <div id="cvCertifications"></div>
-                </div>
-
+              <div class="cv-section" id="sec-education">
+                <h2 class="cv-section-title cv-sidebar-title">Formation</h2>
+                <div id="cvEducation"></div>
+              </div>
+              <div class="cv-section" id="sec-languages">
+                <h2 class="cv-section-title cv-sidebar-title">Langues</h2>
+                <div id="cvLanguages"></div>
+              </div>
+              <div class="cv-section" id="sec-certifications" style="display:none">
+                <h2 class="cv-section-title cv-sidebar-title">Certifications</h2>
+                <div id="cvCertifications"></div>
               </div>
             </div>
+          </div>
 
-          </div><!-- /cv-page -->
-        </div><!-- /cv-wrapper -->
-      </section>
+        </div><!-- /cv-page -->
+      </div><!-- /cv-wrapper -->
+    </section>
 
-    </main>
-  </div>
+  </main>
+</div>
 
-  <!-- Libraries (loaded via CDN) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="app.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
