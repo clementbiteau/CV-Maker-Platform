@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV-Maker — AVA2i</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="app-logo">
+        <div class="logo-badge">CV</div>
+        <span class="logo-text">CV-Maker</span>
+      </div>
+      <button class="settings-btn" id="settingsBtn" title="Paramètres API">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        API Key
+      </button>
+    </header>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+      <div class="settings-inner">
+        <h3>Clé API Claude (Anthropic)</h3>
+        <p class="settings-desc">Obtenez votre clé sur <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. Elle est stockée uniquement dans votre navigateur.</p>
+        <div class="api-key-row">
+          <input type="password" id="apiKey" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false">
+          <button class="btn-primary" id="saveKey">Enregistrer</button>
+        </div>
+        <div class="api-key-status" id="apiKeyStatus"></div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <main class="app-main">
+
+      <!-- Upload Section -->
+      <section class="upload-section" id="uploadSection">
+        <div class="upload-area" id="dropZone">
+          <div class="upload-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          </div>
+          <p class="upload-title">Déposez votre CV ici</p>
+          <p class="upload-subtitle">PDF ou DOCX · Taille max 10 Mo</p>
+          <label class="btn-upload">
+            Parcourir les fichiers
+            <input type="file" id="fileInput" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+          </label>
+        </div>
+        <p class="upload-hint">Le CV sera reformaté automatiquement à l'aide de l'IA.</p>
+      </section>
+
+      <!-- Status Section -->
+      <section class="status-section" id="statusSection" hidden>
+        <div class="status-card">
+          <div class="spinner"></div>
+          <div>
+            <p class="status-title" id="statusTitle">Traitement en cours…</p>
+            <p class="status-text" id="statusText">Extraction du texte…</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Error Section -->
+      <section class="error-section" id="errorSection" hidden>
+        <div class="error-card">
+          <div class="error-icon">⚠</div>
+          <div>
+            <p class="error-title">Une erreur est survenue</p>
+            <p class="error-text" id="errorText"></p>
+          </div>
+          <button class="btn-secondary" id="errorRetryBtn">Réessayer</button>
+        </div>
+      </section>
+
+      <!-- Preview Section -->
+      <section class="preview-section" id="previewSection" hidden>
+        <div class="preview-toolbar">
+          <button class="btn-secondary" id="resetBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Nouveau CV
+          </button>
+          <div class="toolbar-right">
+            <span class="toolbar-hint">Aperçu du CV formaté</span>
+            <button class="btn-primary" id="downloadBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Télécharger le PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- CV Template -->
+        <div class="cv-wrapper">
+          <div class="cv-page" id="cvPage">
+
+            <!-- CV Header -->
+            <div class="cv-header">
+              <div class="cv-header-left">
+                <div class="cv-initials" id="cvInitials">JD</div>
+              </div>
+              <div class="cv-header-right">
+                <h1 class="cv-name" id="cvName">Prénom Nom</h1>
+                <p class="cv-job-title" id="cvJobTitle">Titre professionnel</p>
+                <div class="cv-contacts" id="cvContacts"></div>
+              </div>
+            </div>
+
+            <!-- CV Body -->
+            <div class="cv-body">
+
+              <!-- Main Column -->
+              <div class="cv-main">
+
+                <div class="cv-section" id="sec-summary">
+                  <div class="cv-section-header">
+                    <span class="cv-section-icon">◈</span>
+                    <h2 class="cv-section-title">Profil</h2>
+                  </div>
+                  <p class="cv-summary-text" id="cvSummary"></p>
+                </div>
+
+                <div class="cv-section" id="sec-experience">
+                  <div class="cv-section-header">
+                    <span class="cv-section-icon">◈</span>
+                    <h2 class="cv-section-title">Expérience professionnelle</h2>
+                  </div>
+                  <div id="cvExperience"></div>
+                </div>
+
+              </div>
+
+              <!-- Sidebar -->
+              <div class="cv-sidebar">
+
+                <div class="cv-section" id="sec-skills">
+                  <h2 class="cv-section-title cv-sidebar-title">Compétences</h2>
+                  <ul class="cv-skills-list" id="cvSkills"></ul>
+                </div>
+
+                <div class="cv-section" id="sec-education">
+                  <h2 class="cv-section-title cv-sidebar-title">Formation</h2>
+                  <div id="cvEducation"></div>
+                </div>
+
+                <div class="cv-section" id="sec-languages">
+                  <h2 class="cv-section-title cv-sidebar-title">Langues</h2>
+                  <div id="cvLanguages"></div>
+                </div>
+
+                <div class="cv-section" id="sec-certifications" style="display:none">
+                  <h2 class="cv-section-title cv-sidebar-title">Certifications</h2>
+                  <div id="cvCertifications"></div>
+                </div>
+
+              </div>
+            </div>
+
+          </div><!-- /cv-page -->
+        </div><!-- /cv-wrapper -->
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Libraries (loaded via CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
